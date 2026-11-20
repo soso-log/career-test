@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAREER STUDIO // 현대적 커리어 포지션 진단</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts: Pretendard + Plus Jakarta Sans + JetBrains Mono -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'Pretendard', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* 눈의 피로를 줄이는 저반사 라이트 팔레트 */
+        :root {
+            --bg-canvas: #F4F6F9;
+            --surface-card: #FFFFFF;
+            --surface-subtle: #F8FAFC;
+            --ink-primary: #1E293B;
+            --ink-secondary: #475569;
+            --ink-muted: #64748B;
+            --border-soft: #E2E8F0;
+            --accent-trust: #1D4ED8;
+        }
+
+        body {
+            background-color: var(--bg-canvas);
+            color: var(--ink-primary);
+            font-family: 'Pretendard', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        /* 현대적이고 절제된 게임 캐릭터 카드 스타일 */
+        .studio-card {
+            background-color: var(--surface-card);
+            border: 1px solid var(--border-soft);
+            box-shadow: 0 4px 20px -4px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.03);
+        }
+
+        /* 선택지 인터랙션 버튼 */
+        .option-card {
+            background-color: #FFFFFF;
+            border: 1.5px solid #E2E8F0;
+            transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .option-card:hover {
+            background-color: #F8FAFC;
+            border-color: #93C5FD;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px -4px rgba(29, 78, 216, 0.08);
+        }
+        .option-card.selected {
+            background-color: #EFF6FF;
+            border-color: #2563EB;
+            box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.12);
+        }
+
+        /* 캐릭터 로스터 카드 */
+        .class-preview-card {
+            background-color: #FAFBFD;
+            border: 1px solid #E2E8F0;
+            transition: all 0.2s ease;
+        }
+        .class-preview-card:hover {
+            background-color: #FFFFFF;
+            border-color: #CBD5E1;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px -8px rgba(15, 23, 42, 0.08);
+        }
+
+        /* 스탯 바 애니메이션 */
+        .stat-bar-fill {
+            transition: width 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* 부드러운 화면 전환 */
+        .panel-enter {
+            animation: gentleFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes gentleFadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-blue-100 selection:text-blue-900">
+
+    <!-- 상단 미니멀 내비게이션 바 -->
+    <header class="w-full bg-white/85 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+            <button onclick="navigateTo('intro')" class="flex items-center gap-3 text-left group cursor-pointer focus:outline-none">
+                <div class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center shadow-sm group-hover:bg-blue-600 transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"></path>
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-display font-extrabold text-base sm:text-lg tracking-tight text-slate-900">CAREER STUDIO</span>
+                        <span class="font-mono text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">CLASS GUIDE</span>
+                    </div>
+                </div>
+            </button>
+
+            <div class="flex items-center gap-3">
+                <button id="hud-saved-btn" onclick="restoreSavedResult()" class="hidden items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200/80 transition-colors cursor-pointer">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                    <span>지난 결과 보기</span>
+                </button>
+                <span class="font-mono text-xs text-slate-400 hidden md:inline">단축키 [1-4]</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="w-full max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12 my-auto">
+
+        <!-- 1. 시작 화면: 모던 캐릭터 로스터 로비 -->
+        <section id="view-intro" class="panel-enter">
+            <div class="studio-card rounded-3xl p-6 sm:p-10 lg:p-12">
+                
+                <!-- 상단 소개 영역 -->
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-8 pb-9 border-b border-slate-100">
+                    <div class="max-w-2xl">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-semibold text-xs mb-4">
+                            <span>10개 실무 시나리오</span>
+                            <span class="text-blue-300">•</span>
+                            <span>4가지 커리어 포지션</span>
+                        </div>
+                        <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight mb-3.5">
+                            내 일하는 방식에 꼭 맞는<br>
+                            <span class="text-blue-600">커리어 캐릭터</span>를 찾아보세요
+                        </h1>
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
+                            게임 캐릭터를 고르듯 내 강점과 업무 스타일을 한눈에 확인해 보세요. 실제 프로젝트와 팀플에서 마주치는 <strong class="text-slate-800 font-semibold">10가지 선택 상황</strong>을 통해 가장 잘 맞는 직무와 환상의 팀플 파트너까지 추천해 드립니다.
+                        </p>
+                    </div>
+
+                    <div class="shrink-0 flex flex-col items-stretch sm:items-end gap-2.5">
+                        <button onclick="startTest()" class="px-8 py-4 rounded-2xl bg-slate-900 hover:bg-blue-600 text-white font-bold text-sm sm:text-base shadow-md shadow-slate-900/10 transition-all flex items-center justify-center gap-2.5 cursor-pointer">
+                            <span>진단 시작하기</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                            </svg>
+                        </button>
+                        <span class="text-xs text-slate-400 text-center sm:text-right">약 1분 30초 소요 · 결과 자동 저장</span>
+                    </div>
+                </div>
+
+                <!-- 4가지 플레이어블 캐릭터 로스터 카드 (일러스트 포함) -->
+                <div class="pt-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-xs font-bold tracking-wider text-slate-500 uppercase">4가지 커리어 포지션 미리보기</span>
+                        <span class="text-xs text-slate-400">테스트 완료 시 내 캐릭터 오픈</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Class 01: 그랜드 택티션 -->
+                        <div class="class-preview-card rounded-2xl p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="font-mono text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700">TYPE 01</span>
+                                    <span class="text-xs font-medium text-slate-400">전략 · 분석</span>
+                                </div>
+                                <!-- 캐릭터 일러스트 영역 -->
+                                <div id="preview-art-TACTICIAN" class="w-full h-28 rounded-xl bg-blue-50/70 border border-blue-100/80 mb-4 flex items-center justify-center overflow-hidden"></div>
+                                <h3 class="font-bold text-base text-slate-900">그랜드 택티션</h3>
+                                <p class="text-xs font-semibold text-blue-600 mb-2">큰 그림을 그리는 전략 지휘관</p>
+                                <p class="text-xs text-slate-500 leading-relaxed">우선순위와 성공 확률을 계산해 팀이 나아갈 방향을 설계하는 리더형</p>
+                            </div>
+                        </div>
+
+                        <!-- Class 02: 프론티어 브레이커 -->
+                        <div class="class-preview-card rounded-2xl p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="font-mono text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-indigo-50 text-indigo-700">TYPE 02</span>
+                                    <span class="text-xs font-medium text-slate-400">기획 · 돌파</span>
+                                </div>
+                                <div id="preview-art-BREAKER" class="w-full h-28 rounded-xl bg-indigo-50/70 border border-indigo-100/80 mb-4 flex items-center justify-center overflow-hidden"></div>
+                                <h3 class="font-bold text-base text-slate-900">프론티어 브레이커</h3>
+                                <p class="text-xs font-semibold text-indigo-600 mb-2">새 길을 뚫는 아이디어 개척자</p>
+                                <p class="text-xs text-slate-500 leading-relaxed">남들과 다른 시선으로 새로운 기회를 찾고 빠르게 실행하는 돌파형</p>
+                            </div>
+                        </div>
+
+                        <!-- Class 03: 얼라이언스 아키텍트 -->
+                        <div class="class-preview-card rounded-2xl p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="font-mono text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700">TYPE 03</span>
+                                    <span class="text-xs font-medium text-slate-400">소통 · 조율</span>
+                                </div>
+                                <div id="preview-art-ALLIANCE" class="w-full h-28 rounded-xl bg-teal-50/70 border border-teal-100/80 mb-4 flex items-center justify-center overflow-hidden"></div>
+                                <h3 class="font-bold text-base text-slate-900">얼라이언스 아키텍트</h3>
+                                <p class="text-xs font-semibold text-teal-600 mb-2">팀워크를 완성하는 소통 조율가</p>
+                                <p class="text-xs text-slate-500 leading-relaxed">서로 다른 의견을 하나로 연결해 팀 전체의 시너지를 높이는 협업형</p>
+                            </div>
+                        </div>
+
+                        <!-- Class 04: 아이언 가디언 -->
+                        <div class="class-preview-card rounded-2xl p-5 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="font-mono text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800">TYPE 04</span>
+                                    <span class="text-xs font-medium text-slate-400">실행 · 검증</span>
+                                </div>
+                                <div id="preview-art-GUARDIAN" class="w-full h-28 rounded-xl bg-amber-50/70 border border-amber-100/80 mb-4 flex items-center justify-center overflow-hidden"></div>
+                                <h3 class="font-bold text-base text-slate-900">아이언 가디언</h3>
+                                <p class="text-xs font-semibold text-amber-700 mb-2">완성도를 지키는 실무 수호자</p>
+                                <p class="text-xs text-slate-500 leading-relaxed">놓치기 쉬운 실수와 변수를 미리 막아 빈틈없이 완수하는 안정형</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. 시나리오 진행 화면 -->
+        <section id="view-quiz" class="hidden panel-enter">
+            <div class="studio-card rounded-3xl p-6 sm:p-10 lg:p-12">
+                
+                <!-- 상단 진행 표시줄 -->
+                <div class="pb-6 border-b border-slate-100">
+                    <div class="flex items-center justify-between mb-3.5">
+                        <button id="btn-prev" onclick="prevQuestion()" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 disabled:opacity-30 disabled:pointer-events-none transition-colors cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            <span>이전 문항</span>
+                        </button>
+
+                        <div class="flex items-center gap-2">
+                            <span id="q-tag" class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700">STAGE 01</span>
+                            <span id="q-step" class="font-mono text-sm font-bold text-slate-700">01 / 10</span>
+                        </div>
+                    </div>
+
+                    <!-- 10단계 세그먼트 프로그레스 바 -->
+                    <div id="q-segments" class="grid grid-cols-10 gap-1.5">
+                        <!-- JS 동적 생성 -->
+                    </div>
+                </div>
+
+                <!-- 질문 & 4개 선택지 -->
+                <div id="quiz-stage" class="pt-7">
+                    <p id="q-context" class="text-xs font-semibold text-blue-600 mb-2">
+                        상황 브리핑
+                    </p>
+                    <h2 id="q-title" class="text-lg sm:text-2xl font-bold text-slate-900 leading-snug mb-7">
+                        질문 텍스트가 표시됩니다.
+                    </h2>
+
+                    <div id="q-options" class="space-y-3">
+                        <!-- 선택지 동적 생성 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. 분석 로딩 화면 -->
+        <section id="view-loading" class="hidden panel-enter">
+            <div class="studio-card rounded-3xl p-12 sm:p-16 text-center">
+                <div class="w-14 h-14 mx-auto mb-5 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+                    <div class="w-7 h-7 rounded-full border-2 border-blue-600 border-t-transparent animate-spin"></div>
+                </div>
+                <p class="font-mono text-xs font-semibold tracking-wider text-blue-600 uppercase mb-2">ANALYZING PLAYSTYLE</p>
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-900 mb-2">당신의 커리어 캐릭터를 분석하고 있습니다</h2>
+                <p class="text-sm text-slate-500">10가지 선택 결과를 바탕으로 핵심 능력치와 최적의 팀플 파트너를 매칭 중입니다...</p>
+            </div>
+        </section>
+
+        <!-- 4. 결과 화면: 모던 캐릭터 프로필 시트 -->
+        <section id="view-result" class="hidden panel-enter space-y-5">
+            
+            <!-- 상단 저장 상태 바 -->
+            <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-2.5 rounded-2xl bg-white border border-slate-200/90 text-xs">
+                <div class="flex items-center gap-2 text-slate-700 font-semibold">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>커리어 포지션 진단 완료</span>
+                    <span class="text-slate-300">|</span>
+                    <span id="res-timestamp" class="font-mono text-slate-400 font-normal">자동 저장됨</span>
+                </div>
+                <span class="text-slate-400 hidden sm:inline">브라우저에 마지막 결과가 보관됩니다</span>
+            </div>
+
+            <!-- 메인 캐릭터 카드 -->
+            <div class="studio-card rounded-3xl overflow-hidden">
+                
+                <!-- 캐릭터 프로필 헤더 (일러스트 + 타이틀 + 싱크로율) -->
+                <div class="p-6 sm:p-9 border-b border-slate-100 bg-gradient-to-br from-slate-50 via-white to-blue-50/40">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+                            <!-- 캐릭터 일러스트 포트레이트 -->
+                            <div id="res-portrait" class="w-28 h-28 sm:w-32 sm:h-32 rounded-2xl bg-white border border-slate-200/90 shadow-sm flex items-center justify-center shrink-0 overflow-hidden p-1">
+                                <!-- JS 동적 캐릭터 일러스트 -->
+                            </div>
+
+                            <div>
+                                <div class="flex flex-wrap items-center gap-2 mb-2">
+                                    <span id="res-badge" class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-100/80 text-blue-800">
+                                        TYPE 01 · 전략 지휘관
+                                    </span>
+                                    <span id="res-en-name" class="font-mono text-xs text-slate-400 font-medium">
+                                        THE GRAND TACTICIAN
+                                    </span>
+                                </div>
+                                <h2 id="res-name" class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-1.5">
+                                    그랜드 택티션
+                                </h2>
+                                <p id="res-motto" class="text-sm sm:text-base text-slate-600 font-medium">
+                                    “무작정 열심히 하기 전에, 이길 수밖에 없는 판부터 짠다.”
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 포지션 적합도 -->
+                        <div class="flex md:flex-col items-center md:items-end justify-between md:justify-center bg-white border border-slate-200/90 rounded-2xl px-5 py-3.5 shrink-0 shadow-xs">
+                            <span class="text-xs font-semibold text-slate-400">포지션 일치도</span>
+                            <span id="res-sync" class="font-display text-3xl sm:text-4xl font-extrabold text-blue-600 leading-none mt-1">94%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 본문 2컬럼 레이아웃 -->
+                <div class="p-6 sm:p-9 grid grid-cols-1 lg:grid-cols-12 gap-7">
+                    
+                    <!-- 좌측 5컬럼: 핵심 능력치 + 고유 강점 + 팀플 시너지 파트너 -->
+                    <div class="lg:col-span-5 space-y-5">
+                        
+                        <!-- 4대 능력치 그래프 -->
+                        <div class="bg-slate-50/80 border border-slate-200/70 rounded-2xl p-5">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-xs font-bold tracking-wider text-slate-500 uppercase">핵심 역량 스탯</h3>
+                                <span class="font-mono text-[11px] text-slate-400">MAX 100</span>
+                            </div>
+
+                            <div id="res-stats" class="space-y-4">
+                                <!-- 능력치 바 렌더링 -->
+                            </div>
+                        </div>
+
+                        <!-- 고유 패시브 & 환상의 포지션 -->
+                        <div class="bg-slate-50/80 border border-slate-200/70 rounded-2xl p-5 space-y-3.5">
+                            <div>
+                                <span class="text-[11px] font-bold text-blue-600 block mb-1">고유 스킬 · 핵심 무기</span>
+                                <h4 id="res-passive-title" class="font-bold text-sm text-slate-900 mb-1">패시브 이름</h4>
+                                <p id="res-passive-desc" class="text-xs text-slate-600 leading-relaxed">패시브 설명</p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-200/70 flex items-center justify-between">
+                                <span class="text-xs text-slate-500">최적 시너지 포지션</span>
+                                <span id="res-party" class="text-xs font-bold text-slate-900">얼라이언스 아키텍트</span>
+                            </div>
+                        </div>
+
+                        <!-- 팀플 시너지 파트너 (MBTI / 학과 / 업무 및 역할) -->
+                        <div class="bg-emerald-50/50 border border-emerald-200/80 rounded-2xl p-5 space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-bold text-emerald-800">함께 팀플하면 좋은 동료 추천</span>
+                                <span class="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">TEAM MATCH</span>
+                            </div>
+
+                            <div class="space-y-2 text-xs">
+                                <div class="p-3 rounded-xl bg-white border border-emerald-100">
+                                    <span class="text-[11px] font-semibold text-slate-400 block mb-0.5">어울리는 동료 MBTI</span>
+                                    <p id="res-mate-mbti" class="font-bold text-emerald-700 text-sm">ENFJ · ESFJ · INFJ</p>
+                                </div>
+
+                                <div class="p-3 rounded-xl bg-white border border-emerald-100">
+                                    <span class="text-[11px] font-semibold text-slate-400 block mb-0.5">추천 전공 · 학과</span>
+                                    <p id="res-mate-major" class="font-semibold text-slate-800 leading-relaxed">커뮤니케이션학, 심리학, 경영학</p>
+                                </div>
+
+                                <div class="p-3 rounded-xl bg-white border border-emerald-100">
+                                    <span class="text-[11px] font-semibold text-slate-400 block mb-0.5">맡기면 좋은 업무와 역할</span>
+                                    <p id="res-mate-role" class="text-slate-600 leading-relaxed">의견 조율 및 발표 총괄</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 우측 7컬럼: 플레이스타일 분석 & 추천 직무 TOP 3 -->
+                    <div class="lg:col-span-7 space-y-6">
+                        <div>
+                            <h3 class="text-xs font-bold tracking-wider text-slate-500 uppercase mb-2.5">일하는 방식과 강점</h3>
+                            <div class="bg-slate-50/80 border border-slate-200/70 rounded-2xl p-5 sm:p-6">
+                                <p id="res-desc" class="text-sm sm:text-[15px] text-slate-700 leading-relaxed">
+                                    상세 설명이 표시됩니다.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 추천 직무 TOP 3 -->
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-xs font-bold tracking-wider text-blue-600 uppercase">추천 직무 TOP 3</h3>
+                                <span class="text-xs text-slate-400">강점이 가장 빛나는 포지션</span>
+                            </div>
+
+                            <div id="res-jobs" class="space-y-3">
+                                <!-- 추천 직무 3개 슬롯 렌더링 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 하단 버튼 영역 -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
+                <button onclick="restartTest()" class="px-6 py-4 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 font-bold text-sm border border-slate-200 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    <span>다시 진단하기</span>
+                </button>
+
+                <button onclick="copyResultText()" class="px-8 py-4 rounded-2xl bg-slate-900 hover:bg-blue-600 text-white font-bold text-sm shadow-md shadow-slate-900/10 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"></path>
+                    </svg>
+                    <span>결과 복사</span>
+                </button>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- 하단 푸터 -->
+    <footer class="w-full py-6 text-center text-xs text-slate-400">
+        CAREER STUDIO · EYE-COMFORT DESIGN &amp; PRACTICAL CAREER DIAGNOSTICS
+    </footer>
+
+    <!-- 알림 토스트 -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-medium px-5 py-3.5 rounded-full shadow-xl opacity-0 pointer-events-none transition-all duration-300 translate-y-3 z-50 flex items-center gap-2.5">
+        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+        <span id="toast-msg">진단 결과가 클립보드에 복사되었습니다.</span>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'career_studio_class_save_v2';
+
+        // 4가지 캐릭터 전용 현대적 플랫 일러스트 SVG (눈이 편안한 파스텔·슬레이트 톤)
+        const CHARACTER_ART = {
+            TACTICIAN: `
+                <svg viewBox="0 0 160 120" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="80" cy="60" r="46" fill="#DBEAFE"/>
+                    <rect x="24" y="20" width="28" height="20" rx="5" fill="#FFFFFF" stroke="#93C5FD" stroke-width="1.5"/>
+                    <path d="M30 33L36 27L41 31L47 24" stroke="#2563EB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <rect x="110" y="26" width="26" height="26" rx="6" fill="#FFFFFF" stroke="#93C5FD" stroke-width="1.5"/>
+                    <circle cx="123" cy="39" r="6" stroke="#2563EB" stroke-width="1.8"/>
+                    <path d="M123 33V39L127 41" stroke="#2563EB" stroke-width="1.8" stroke-linecap="round"/>
+                    <!-- 캐릭터 상반신 -->
+                    <path d="M46 112C46 93 61 82 80 82C99 82 114 93 114 112" fill="#1E3A8A"/>
+                    <path d="M72 82L80 96L88 82" fill="#FFFFFF"/>
+                    <rect x="73" y="70" width="14" height="14" rx="6" fill="#FDE68A"/>
+                    <!-- 얼굴 & 안경 -->
+                    <circle cx="80" cy="54" r="20" fill="#FEF3C7"/>
+                    <path d="M60 50C60 37 69 30 80 30C91 30 100 37 100 50C94 45 87 43 80 43C73 43 66 45 60 50Z" fill="#1E293B"/>
+                    <rect x="66" y="51" width="11" height="8" rx="2.5" stroke="#1E293B" stroke-width="1.8" fill="#FFFFFF" fill-opacity="0.4"/>
+                    <rect x="83" y="51" width="11" height="8" rx="2.5" stroke="#1E293B" stroke-width="1.8" fill="#FFFFFF" fill-opacity="0.4"/>
+                    <path d="M77 55H83" stroke="#1E293B" stroke-width="1.8"/>
+                    <path d="M75 65C77.5 67 82.5 67 85 65" stroke="#92400E" stroke-width="1.8" stroke-linecap="round"/>
+                </svg>
+            `,
+            BREAKER: `
+                <svg viewBox="0 0 160 120" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="80" cy="60" r="46" fill="#E0E7FF"/>
+                    <!-- 아이디어 전구 & 로켓 배지 -->
+                    <circle cx="34" cy="34" r="12" fill="#FFFFFF" stroke="#A5B4FC" stroke-width="1.5"/>
+                    <path d="M34 27V35M30 31H38" stroke="#4F46E5" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M122 22L126 30L135 31L128 37L130 46L122 41L114 46L116 37L109 31L118 30L122 22Z" fill="#FBBF24"/>
+                    <!-- 캐릭터 상반신 -->
+                    <path d="M46 112C46 93 61 82 80 82C99 82 114 93 114 112" fill="#4338CA"/>
+                    <path d="M64 85L80 100L96 85" stroke="#A5B4FC" stroke-width="2.5" stroke-linecap="round"/>
+                    <rect x="73" y="70" width="14" height="14" rx="6" fill="#FDE68A"/>
+                    <!-- 역동적인 헤어 & 표정 -->
+                    <circle cx="80" cy="55" r="20" fill="#FEF3C7"/>
+                    <path d="M59 52C58 36 68 27 81 28C93 29 102 37 101 52C97 44 90 41 82 42L76 36L72 43C66 43 62 46 59 52Z" fill="#312E81"/>
+                    <circle cx="72" cy="55" r="2.2" fill="#1E293B"/>
+                    <circle cx="88" cy="55" r="2.2" fill="#1E293B"/>
+                    <path d="M74 63C76.5 67 83.5 67 86 63" stroke="#92400E" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            `,
+            ALLIANCE: `
+                <svg viewBox="0 0 160 120" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="80" cy="60" r="46" fill="#CCFBF1"/>
+                    <!-- 말풍선 & 연결 노드 -->
+                    <rect x="22" y="24" width="30" height="20" rx="8" fill="#FFFFFF" stroke="#5EEAD4" stroke-width="1.5"/>
+                    <circle cx="32" cy="34" r="2" fill="#0D9488"/>
+                    <circle cx="37" cy="34" r="2" fill="#0D9488"/>
+                    <circle cx="42" cy="34" r="2" fill="#0D9488"/>
+                    <circle cx="124" cy="34" r="12" fill="#FFFFFF" stroke="#5EEAD4" stroke-width="1.5"/>
+                    <path d="M119 34L122 37L129 30" stroke="#0D9488" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <!-- 캐릭터 상반신 -->
+                    <path d="M46 112C46 93 61 82 80 82C99 82 114 93 114 112" fill="#0F766E"/>
+                    <path d="M68 83C72 90 88 90 92 83" stroke="#99F6E4" stroke-width="2.5" stroke-linecap="round"/>
+                    <rect x="73" y="70" width="14" height="14" rx="6" fill="#FDE68A"/>
+                    <!-- 부드러운 헤어 & 미소 -->
+                    <circle cx="80" cy="55" r="20" fill="#FEF3C7"/>
+                    <path d="M58 56C58 38 67 29 80 29C93 29 102 38 102 56C99 47 92 42 80 42C68 42 61 47 58 56Z" fill="#134E4A"/>
+                    <path d="M69 54C70.5 52 73.5 52 75 54" stroke="#1E293B" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M85 54C86.5 52 89.5 52 91 54" stroke="#1E293B" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M74 63C77 66.5 83 66.5 86 63" stroke="#92400E" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            `,
+            GUARDIAN: `
+                <svg viewBox="0 0 160 120" class="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="80" cy="60" r="46" fill="#FEF3C7"/>
+                    <!-- 방패 & 체크리스트 아이콘 -->
+                    <path d="M35 22L46 26V35C46 41.5 41.3 46.8 35 49C28.7 46.8 24 41.5 24 35V26L35 22Z" fill="#FFFFFF" stroke="#FCD34D" stroke-width="1.8"/>
+                    <path d="M31 35L34 38L40 32" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <rect x="112" y="24" width="24" height="26" rx="5" fill="#FFFFFF" stroke="#FCD34D" stroke-width="1.5"/>
+                    <path d="M117 32H131M117 38H128M117 44H125" stroke="#D97706" stroke-width="1.8" stroke-linecap="round"/>
+                    <!-- 캐릭터 상반신 -->
+                    <path d="M46 112C46 93 61 82 80 82C99 82 114 93 114 112" fill="#334155"/>
+                    <rect x="75" y="82" width="10" height="24" rx="2" fill="#F59E0B"/>
+                    <rect x="73" y="70" width="14" height="14" rx="6" fill="#FDE68A"/>
+                    <!-- 단정한 헤어 & 든든한 표정 -->
+                    <circle cx="80" cy="55" r="20" fill="#FEF3C7"/>
+                    <path d="M60 51C60 37 68 30 80 30C92 30 100 37 100 51C95 44 88 42 80 42C72 42 65 44 60 51Z" fill="#0F172A"/>
+                    <circle cx="72" cy="55" r="2.2" fill="#1E293B"/>
+                    <circle cx="88" cy="55" r="2.2" fill="#1E293B"/>
+                    <path d="M75 64H85" stroke="#92400E" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            `
+        };
+
+        // 실제 업무와 팀 프로젝트 상황을 이해하기 쉽게 풀어낸 10개의 시나리오
+        const QUESTIONS = [
+            {
+                context: "상황 01 · 정보가 부족한 상태에서의 첫 대응",
+                title: "아직 자료 조사가 60%밖에 안 끝났는데, 경쟁 팀에서 비슷한 결과물을 먼저 공개했습니다. 가장 먼저 무엇을 할까요?",
+                options: [
+                    { text: "지금 가진 자료만으로 승부할 수 있는지 따져보고, 남은 시간 동안 가장 효과적인 실행 순서부터 다시 짠다.", type: "TACTICIAN" },
+                    { text: "상대와 똑같이 따라가는 건 의미가 없으니, 아예 다른 타깃이나 색다른 콘셉트로 방향을 틀어 빠르게 시도한다.", type: "BREAKER" },
+                    { text: "팀원들과 바로 짧게 회의를 열어 각자 맡은 파트에서 현실적으로 감당할 수 있는 수정 범위부터 맞춘다.", type: "ALLIANCE" },
+                    { text: "상대 결과물의 빈틈과 아쉬운 점을 꼼꼼히 분석해서, 우리 결과물의 완성도와 디테일을 높일 체크리스트를 만든다.", type: "GUARDIAN" }
+                ]
+            },
+            {
+                context: "상황 02 · 추가 지원 배분하기",
+                title: "마감을 일주일 앞두고 팀에 추가 예산과 도우미 1명이 생겼습니다. 어디에 가장 먼저 투입할까요?",
+                options: [
+                    { text: "평가 점수나 최종 성과에 가장 큰 영향을 미치는 핵심 파트 한 곳에 집중적으로 쏟아붓는다.", type: "TACTICIAN" },
+                    { text: "사람들의 시선을 단번에 사로잡을 수 있는 결정적인 아이디어(하이라이트 요소)를 하나 더 만드는 데 쓴다.", type: "BREAKER" },
+                    { text: "일이 몰려서 지쳐 있는 팀원들의 업무를 나누어 주고, 팀 전체의 진행 속도를 맞추는 데 쓴다.", type: "ALLIANCE" },
+                    { text: "발표나 오픈 직전에 터질 수 있는 오탈자, 오류, 돌발 변수를 미리 점검하고 막아주는 검증 작업에 쓴다.", type: "GUARDIAN" }
+                ]
+            },
+            {
+                context: "상황 03 · 팽팽한 의견 대립 조율하기",
+                title: "기획·디자인 파트는 '새롭고 멋진 시도'를, 개발·실무 파트는 '현실적인 안정성'을 주장하며 3일째 의견이 좁혀지지 않습니다.",
+                options: [
+                    { text: "목표 달성에 무엇이 더 유리한지 기준표를 만들어, 감정이 아닌 객관적인 점수로 우선순위를 정하자고 제안한다.", type: "TACTICIAN" },
+                    { text: "양쪽 다 만족시킬 수 있도록 기존의 방식을 아예 바꾼 새로운 대안을 즉석에서 스케치해 보여준다.", type: "BREAKER" },
+                    { text: "1차 버전은 안정적으로 먼저 완성하고, 여유가 생기면 새로운 시도를 추가하는 단계별 합의안을 이끌어낸다.", type: "ALLIANCE" },
+                    { text: "무리해서 진행했을 때 생길 수 있는 마감 지연과 오류 위험을 구체적으로 정리해 현실 가능한 범위를 확정한다.", type: "GUARDIAN" }
+                ]
+            },
+            {
+                context: "상황 04 · 잘되고 있을 때의 다음 선택",
+                title: "현재 진행 중인 방식이 매달 꾸준히 좋은 성과를 내고 있습니다. 다음 분기에는 어떻게 움직일까요?",
+                options: [
+                    { text: "이 방식이 언제쯤 한계에 부딪힐지 미리 예측하고, 다음 먹거리가 될 새로운 전략을 함께 준비한다.", type: "TACTICIAN" },
+                    { text: "남들이 금방 따라 할 수 있으므로, 전체 자원의 30% 정도는 떼어서 완전히 새로운 방식을 실험해 본다.", type: "BREAKER" },
+                    { text: "잘된 비결을 팀원 모두가 쉽게 따라 할 수 있는 매뉴얼로 정리해 팀 전체의 실력을 함께 끌어올린다.", type: "ALLIANCE" },
+                    { text: "일이 커질수록 생기기 쉬운 실수나 누락이 없는지 기존 작업 과정을 꼼꼼히 점검해 내실을 다진다.", type: "GUARDIAN" }
+                ]
+            },
+            {
+                context: "상황 05 · 5분 안에 핵심 설득하기",
+                title: "의사결정권자(교수님, 팀장님, 투자자)에게 새 프로젝트를 승인받아야 합니다. 5분 동안 무엇을 가장 강조할까요?",
+                options: [
+                    { text: "왜 이 일을 해야 하는지, 목표 수치와 단계별 실행 계획이 한눈에 들어오는 전체 로드맵", type: "TACTICIAN" },
+                    { text: "기존의 뻔한 방식을 깨는 신선한 아이디어와 바로 눈으로 확인할 수 있는 시제품(프로토타입)", type: "BREAKER" },
+                    { text: "실제 사용자들의 생생한 반응과, 이 프로젝트가 여러 팀에 가져다줄 긍정적인 협업 효과", type: "ALLIANCE" },
+                    { text: "예상되는 문제점에 대한 철저한 대비책과, 약속한 기한 안에 확실히 뽑아낼 결과물 목록", type: "GUARDIAN" }
+                ]
+            },
+            {
+                context: "상황 06 · 공들인 계획이 흔들릴 때",
+                title: "두 달 동안 열심히 준비한 기획안이 사전 테스트에서 생각보다 반응이 좋지 않습니다. 어떻게 대처할까요?",
+                options: [
+                    { text: "어느 단계에서 반응이 떨어졌는지 원인을 쪼개어 분석한 뒤, 핵심 타깃과 방향만 날카롭게 수정한다.", type: "TACTICIAN" },
+                    { text: "아까워하지 않고 과감히 접은 뒤, 테스트 중에 사람들이 의외로 흥미를 보인 포인트에서 새 아이템을 뽑아낸다.", type: "BREAKER" },
+                    { text: "실망한 팀원들의 기분부터 다독이고, 각자 느낀 점을 편하게 이야기하게 해서 함께 다음 방향을 찾는다.", type: "ALLIANCE" },
+                    { text: "테스트 방식이나 질문에 오류가 없었는지 먼저 확인하고, 부족하다고 지적받은 부분을 하나씩 꼼꼼히 보완한다.", type: "GUARDIAN" }
+                ]
+            },
+            {
+                context: "상황 07 · 동료에게 업무 맡기기",
+                title: "특정 분야를 나보다 잘 아는 동료에게 중요한 파트를 맡겨야 합니다. 어떤 방식으로 일을 넘길까요?",
+                options: [
+                    { text: "최종적으로 달성해야 할 목표와 마감 기준만 명확히 알려주고, 구체적인 방법은 전적으로 맡긴다.", type: "TACTICIAN" },
+                    { text: "기존 틀에 얽매이지 말고 본인이 해보고 싶었던 가장 참신한 시도를 마음껏 해보라고 판을 열어준다.", type: "BREAKER" },
+                    { text: "진행하다 막히면 언제든 편하게 상의할 수 있도록 중간중간 짧게 상황을 공유하는 시간을 잡는다.", type: "ALLIANCE" },
+                    { text: "다른 파트와 연결되는 파일 형식, 일정, 중간 점검 날짜를 미리 정확히 합의해 착오를 없앤다.", type: "GUARDIAN" }
+                ]
+            },
+            {
+                context: "상황 08 · 갑작스러운 돌발 위기 대응",
+                title: "서비스나 행사를 오픈하자마자 사람이 너무 많이 몰려 일부 기능이 멈췄습니다. 가장 먼저 취할 행동은?",
+                options: [
+                    { text: "가장 중요한 핵심 기능부터 살리고, 덜 급한 부가 기능은 잠시 꺼두는 우선순위 정리부터 지시한다.", type: "TACTICIAN" },
+                    { text: "기다리는 화면 자체를 재미있는 이벤트나 센스 있는 안내로 바꿔서 불만을 오히려 좋은 인상으로 바꾼다.", type: "BREAKER" },
+                    { text: "고객 응대, 실무진, 운영팀의 소통 창구를 하나로 합쳐 외부와 내부에 헷갈리지 않는 공지를 전달한다.", type: "ALLIANCE" },
+                    { text: "오류가 발생한 정확한 원인을 끝까지 추적해서, 같은 문제가 다시는 터지지 않도록 근본적으로 수리한다.", type: "GUARDIAN" }
+                ]
+            },
+            {
+                context: "상황 09 · 내가 일하고 싶은 환경",
+                title: "조건과 대우가 똑같은 두 곳에서 제안이 왔습니다. 당신의 마음을 움직이는 결정적인 매력은 무엇인가요?",
+                options: [
+                    { text: "프로젝트의 핵심 결정권을 쥐고, 성패를 가르는 큰 전략을 내 손으로 직접 설계할 수 있는 자리", type: "TACTICIAN" },
+                    { text: "정해진 답이 없는 새로운 분야에서 내 아이디어를 시장에 빠르게 테스트해 볼 수 있는 자리", type: "BREAKER" },
+                    { text: "배울 점이 많은 동료들과 호흡을 맞추며, 서로의 강점을 합쳐 큰 시너지를 낼 수 있는 자리", type: "ALLIANCE" },
+                    { text: "체계적인 시스템 안에서 내 전문성을 깊이 쌓아, 누구도 쉽게 대체할 수 없는 실력을 인정받는 자리", type: "GUARDIAN" }
+                ]
+            },
+            {
+                context: "상황 10 · 동료들에게 남기고 싶은 평판",
+                title: "함께 일했던 동료들에게 어떤 사람으로 기억되고 싶나요?",
+                options: [
+                    { text: "\"그 사람이 방향을 잡으면, 언제나 가장 논리적이고 확실하게 이기는 길이 열렸다.\"", type: "TACTICIAN" },
+                    { text: "\"다들 안 된다고 망설일 때, 가장 먼저 새로운 돌파구를 찾아낸 개척자였다.\"", type: "BREAKER" },
+                    { text: "\"그 사람이 합류한 팀은 언제나 분위기가 살아났고, 어렵던 협업도 결국 완성되었다.\"", type: "ALLIANCE" },
+                    { text: "\"그 사람이 맡은 일은 단 한 번도 구멍이 난 적이 없었고, 믿고 맡길 수 있는 기준이었다.\"", type: "GUARDIAN" }
+                ]
+            }
+        ];
+
+        // 4가지 커리어 캐릭터 데이터
+        const CLASSES = {
+            TACTICIAN: {
+                badge: "TYPE 01 · 전략 지휘관",
+                name: "그랜드 택티션",
+                enName: "THE GRAND TACTICIAN",
+                motto: "“무작정 열심히 하기 전에, 이길 수밖에 없는 판부터 짠다.”",
+                desc: "복잡한 상황 속에서도 핵심 원인과 우선순위를 정확히 짚어내는 전략가입니다. 감이나 분위기에 휩쓸리지 않고 근거와 데이터를 바탕으로 가장 효율적인 길을 찾아내며, 한정된 시간과 자원을 가장 중요한 곳에 배치해 팀 전체의 성과를 극대화합니다.",
+                passiveTitle: "핵심 포착 (Macro Vision)",
+                passiveDesc: "겉으로 드러난 문제 너머의 진짜 원인을 찾아내, 팀이 불필요한 곳에 에너지를 낭비하지 않도록 방향을 잡아줍니다.",
+                party: "얼라이언스 아키텍트 (소통 조율가)",
+                mateMbti: "ENFJ · ESFJ · INFJ",
+                mateMajor: "미디어커뮤니케이션학, 심리학, 경영학(조직인사), 디자인학",
+                mateRole: "팀원 간 의견 충돌 조율 및 분위기 메이킹, 최종 발표(피칭) 스토리텔링, 사용자 인터뷰 및 설문 조사 전담",
+                stats: [
+                    { label: "전략 설계력", base: 94, color: "bg-blue-600" },
+                    { label: "문제 분석력", base: 92, color: "bg-indigo-500" },
+                    { label: "소통 조율력", base: 74, color: "bg-teal-500" },
+                    { label: "위험 관리력", base: 82, color: "bg-slate-600" }
+                ],
+                jobs: [
+                    {
+                        rank: "추천 1",
+                        title: "서비스 기획자 · 프로덕트 오너 (PM / PO)",
+                        desc: "서비스의 목표와 핵심 기능을 설계하고, 한정된 개발·디자인 일정의 우선순위를 결정하는 총괄 기획자"
+                    },
+                    {
+                        rank: "추천 2",
+                        title: "경영전략 · 사업개발 매니저 (Strategy / BD)",
+                        desc: "시장의 흐름을 분석해 회사가 나아갈 중장기 성장 방향과 새로운 수익 모델을 기획하는 전략가"
+                    },
+                    {
+                        rank: "추천 3",
+                        title: "데이터 · 그로스 분석가 (Data / Growth Analyst)",
+                        desc: "사용자 데이터를 분석해 성장을 가로막는 원인을 찾고, 성과를 높이는 실험을 설계하는 분석가"
+                    }
+                ]
+            },
+            BREAKER: {
+                badge: "TYPE 02 · 선봉 개척자",
+                name: "프론티어 브레이커",
+                enName: "THE FRONTIER BREAKER",
+                motto: "“남들과 똑같이 해서는 1등이 될 수 없다. 새로운 판을 연다.”",
+                desc: "당연하게 여겨지던 기존 방식에 질문을 던지고, 남들이 아직 보지 못한 새로운 기회를 가장 먼저 선점하는 행동파 개척자입니다. 완벽한 계획이 세워질 때까지 기다리기보다 빠르게 시제품을 만들어 부딪혀 보며, 정체된 팀에 신선한 돌파구를 만들어냅니다.",
+                passiveTitle: "발상의 전환 (Breakthrough)",
+                passiveDesc: "기존 방식이 막히는 순간, 고정관념을 깨는 참신한 아이디어로 완전히 새로운 해결책을 제시합니다.",
+                party: "아이언 가디언 (실무 수호자)",
+                mateMbti: "ISTJ · ISFJ · ESTJ",
+                mateMajor: "산업공학, 회계·재무학, 소프트웨어공학, 행정·법학",
+                mateRole: "세부 일정 및 마감 기한 관리, 자료 근거 및 팩트 체크, 문서 양식 통일 및 최종 결과물 오탈자·오류 검수",
+                stats: [
+                    { label: "빠른 실행력", base: 95, color: "bg-indigo-600" },
+                    { label: "기회 포착력", base: 91, color: "bg-blue-500" },
+                    { label: "창의적 기획", base: 88, color: "bg-violet-500" },
+                    { label: "꼼꼼한 마감", base: 68, color: "bg-slate-500" }
+                ],
+                jobs: [
+                    {
+                        rank: "추천 1",
+                        title: "신사업 기획 · 창업가 (0-to-1 Builder)",
+                        desc: "아무것도 없는 상태에서 사람들의 숨은 불편을 찾아 새로운 서비스와 비즈니스를 만들어내는 개척자"
+                    },
+                    {
+                        rank: "추천 2",
+                        title: "브랜드 마케터 · 콘텐츠 디렉터",
+                        desc: "뻔한 광고 공식에서 벗어난 참신한 캠페인과 스토리텔링으로 사람들의 마음을 사로잡는 마케터"
+                    },
+                    {
+                        rank: "추천 3",
+                        title: "UX/UI 프로덕트 디자이너",
+                        desc: "사용자가 직관적으로 빠져드는 화면과 감각적인 서비스 경험을 설계해 차별화를 만드는 디자이너"
+                    }
+                ]
+            },
+            ALLIANCE: {
+                badge: "TYPE 03 · 소통 조율가",
+                name: "얼라이언스 아키텍트",
+                enName: "ALLIANCE ARCHITECT",
+                motto: "“혼자 잘하는 1명보다, 모두가 제 실력을 내는 팀이 이긴다.”",
+                desc: "서로 다른 배경과 직무를 가진 사람들 사이의 오해를 풀고, 모두가 납득할 수 있는 합의점을 찾아내는 소통 전문가입니다. 상대방의 입장과 숨은 의도를 빠르게 파악해 갈등을 건설적인 협력으로 바꾸며, 팀 전체의 호흡을 하나로 묶어 결과물을 완성합니다.",
+                passiveTitle: "팀워크 증폭 (Synergy Link)",
+                passiveDesc: "각기 다른 파트의 언어를 통역하고 연결해, 협업 과정에서 생기는 불필요한 마찰과 시간 낭비를 줄여줍니다.",
+                party: "그랜드 택티션 (전략 지휘관)",
+                mateMbti: "INTJ · ENTJ · INTP",
+                mateMajor: "경제·통계학, 컴퓨터공학, 경영전략, 데이터사이언스",
+                mateRole: "프로젝트 핵심 목표와 우선순위 결정, 객관적 데이터 분석 및 논리 구조 설계, 문제 해결 기준표 작성",
+                stats: [
+                    { label: "설득 협상력", base: 95, color: "bg-teal-600" },
+                    { label: "상황 파악력", base: 90, color: "bg-emerald-500" },
+                    { label: "목표 연결력", base: 80, color: "bg-blue-500" },
+                    { label: "갈등 조율력", base: 84, color: "bg-slate-600" }
+                ],
+                jobs: [
+                    {
+                        rank: "추천 1",
+                        title: "제휴 · 파트너십 · B2B 영업 매니저",
+                        desc: "외부 기업과 신뢰를 쌓고 서로 이익이 되는 협상을 이끌어내 굵직한 비즈니스 계약을 성사시키는 전문가"
+                    },
+                    {
+                        rank: "추천 2",
+                        title: "프로젝트 매니저 · 스크럼 마스터 (PM / PMO)",
+                        desc: "기획·디자인·개발 등 여러 파트의 소통을 조율하고 일정을 관리해 프로젝트를 끝까지 완주시키는 리더"
+                    },
+                    {
+                        rank: "추천 3",
+                        title: "인사 · 조직문화 담당자 (HR / People Partner)",
+                        desc: "구성원들의 강점을 살리고, 모두가 몰입해서 일할 수 있는 건강한 팀 문화를 만드는 조직 전문가"
+                    }
+                ]
+            },
+            GUARDIAN: {
+                badge: "TYPE 04 · 실무 수호자",
+                name: "아이언 가디언",
+                enName: "THE IRON GUARDIAN",
+                motto: "“화려한 말보다 빈틈없는 완성도가 진짜 실력을 증명한다.”",
+                desc: "거창한 구호보다 탄탄한 기본기와 치밀한 실행력으로 팀의 신뢰를 지키는 든든한 버팀목입니다. 다른 사람들이 놓치기 쉬운 예외 상황과 실수를 미리 발견해 차단하며, 약속한 기한 안에 한 치의 오차도 없는 결과물을 만들어 팀이 안심하고 전진하게 합니다.",
+                passiveTitle: "무결점 방어 (Zero-Defect)",
+                passiveDesc: "작업 과정의 빈틈과 예외 케이스를 정확히 찾아내, 발표나 출시 직전의 치명적인 실수를 원천 차단합니다.",
+                party: "프론티어 브레이커 (선봉 개척자)",
+                mateMbti: "ENTP · ENFP · ESTP",
+                mateMajor: "시각·UX디자인, 광고홍보학, 문화콘텐츠학, 창업·벤처학",
+                mateRole: "초기 아이디어 발산 및 차별화 콘셉트 도출, 시선을 끄는 발표 자료·시제품 제작, 새로운 시도 제안",
+                stats: [
+                    { label: "실수 방지력", base: 96, color: "bg-slate-800" },
+                    { label: "끝맺음 지구력", base: 93, color: "bg-amber-600" },
+                    { label: "정밀 검증력", base: 86, color: "bg-blue-600" },
+                    { label: "유연한 변화", base: 72, color: "bg-slate-400" }
+                ],
+                jobs: [
+                    {
+                        rank: "추천 1",
+                        title: "서비스 운영 · 비즈니스 오퍼레이션 (Ops)",
+                        desc: "팀의 업무 절차를 체계적으로 정리하고 운영 효율을 높여 비즈니스가 흔들림 없이 굴러가게 만드는 전문가"
+                    },
+                    {
+                        rank: "추천 2",
+                        title: "품질 관리 · QA 엔지니어 (Quality Assurance)",
+                        desc: "서비스의 모든 기능과 예외 상황을 꼼꼼히 테스트해 사용자에게 오류 없는 완벽한 경험을 보장하는 품질 수호자"
+                    },
+                    {
+                        rank: "추천 3",
+                        title: "재무 · 회계 · 리스크 관리 전문가",
+                        desc: "정확한 수치 검증과 원칙에 기반한 관리로 회사의 자금과 안정성을 든든하게 지키는 실무 전문가"
+                    }
+                ]
+            }
+        };
+
+        // 상태 변수
+        let currentIndex = 0;
+        let answers = [];
+        let savedResultData = null;
+
+        // 페이지 로드 시 초기화
+        window.addEventListener('DOMContentLoaded', () => {
+            renderIntroIllustrations();
+            loadFromLocalStorage();
+            bindKeyboardControls();
+        });
+
+        // 시작 화면 4개 클래스 일러스트 삽입
+        function renderIntroIllustrations() {
+            Object.keys(CHARACTER_ART).forEach(key => {
+                const slot = document.getElementById(`preview-art-${key}`);
+                if (slot) slot.innerHTML = CHARACTER_ART[key];
+            });
+        }
+
+        // 로컬 스토리지에서 마지막 결과 불러오기
+        function loadFromLocalStorage() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed && CLASSES[parsed.topClass]) {
+                        savedResultData = parsed;
+                        const hudBtn = document.getElementById('hud-saved-btn');
+                        hudBtn.classList.remove('hidden');
+                        hudBtn.classList.add('inline-flex');
+                    }
+                }
+            } catch (err) {
+                console.warn('LocalStorage load failed:', err);
+            }
+        }
+
+        // 키보드 단축키 (1~4 선택, 좌측 화살표 이전)
+        function bindKeyboardControls() {
+            window.addEventListener('keydown', (e) => {
+                const quizView = document.getElementById('view-quiz');
+                if (quizView.classList.contains('hidden')) return;
+
+                if (['1', '2', '3', '4'].includes(e.key)) {
+                    const idx = parseInt(e.key, 10) - 1;
+                    selectOption(idx);
+                } else if (e.key === 'ArrowLeft') {
+                    if (currentIndex > 0) prevQuestion();
+                }
+            });
+        }
+
+        // 화면 전환 함수
+        function navigateTo(viewId) {
+            ['intro', 'quiz', 'loading', 'result'].forEach(id => {
+                const el = document.getElementById(`view-${id}`);
+                if (id === viewId) {
+                    el.classList.remove('hidden');
+                    el.classList.remove('panel-enter');
+                    void el.offsetWidth;
+                    el.classList.add('panel-enter');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 진단 시작
+        function startTest() {
+            currentIndex = 0;
+            answers = [];
+            renderQuestion();
+            navigateTo('quiz');
+        }
+
+        // 재진단
+        function restartTest() {
+            startTest();
+        }
+
+        // 저장된 결과 즉시 열기
+        function restoreSavedResult() {
+            if (savedResultData) {
+                renderResultSheet(savedResultData);
+                navigateTo('result');
+            }
+        }
+
+        // 현재 문항 렌더링
+        function renderQuestion() {
+            const q = QUESTIONS[currentIndex];
+            const total = QUESTIONS.length;
+
+            document.getElementById('q-tag').textContent = `STAGE ${String(currentIndex + 1).padStart(2, '0')}`;
+            document.getElementById('q-step').textContent = `${String(currentIndex + 1).padStart(2, '0')} / ${total}`;
+            document.getElementById('btn-prev').disabled = currentIndex === 0;
+
+            // 10칸 세그먼트 게이지 업데이트
+            const segmentsEl = document.getElementById('q-segments');
+            segmentsEl.innerHTML = Array.from({ length: total }, (_, i) => {
+                let cls = 'h-1.5 rounded-full transition-all duration-300 ';
+                if (i < currentIndex) cls += 'bg-blue-600';
+                else if (i === currentIndex) cls += 'bg-blue-400';
+                else cls += 'bg-slate-200';
+                return `<div class="${cls}"></div>`;
+            }).join('');
+
+            const stage = document.getElementById('quiz-stage');
+            stage.classList.remove('panel-enter');
+            void stage.offsetWidth;
+            stage.classList.add('panel-enter');
+
+            document.getElementById('q-context').textContent = q.context;
+            document.getElementById('q-title').textContent = q.title;
+
+            const optionsEl = document.getElementById('q-options');
+            optionsEl.innerHTML = '';
+
+            const keys = ['1', '2', '3', '4'];
+            q.options.forEach((opt, idx) => {
+                const isSelected = answers[currentIndex] === idx;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `option-card w-full text-left p-4 sm:p-5 rounded-2xl flex items-start sm:items-center gap-4 cursor-pointer focus:outline-none ${isSelected ? 'selected' : ''}`;
+
+                btn.innerHTML = `
+                    <span class="font-mono text-xs font-bold w-8 h-8 rounded-xl shrink-0 flex items-center justify-center transition-colors ${
+                        isSelected
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-slate-100 text-slate-600'
+                    }">
+                        ${keys[idx]}
+                    </span>
+                    <span class="text-sm sm:text-[15px] leading-relaxed ${
+                        isSelected ? 'font-bold text-slate-900' : 'font-medium text-slate-700'
+                    }">
+                        ${opt.text}
+                    </span>
+                `;
+
+                btn.onclick = () => selectOption(idx);
+                optionsEl.appendChild(btn);
+            });
+        }
+
+        // 선택지 선택 처리
+        function selectOption(optionIdx) {
+            answers[currentIndex] = optionIdx;
+
+            if (currentIndex < QUESTIONS.length - 1) {
+                currentIndex++;
+                renderQuestion();
+            } else {
+                finalizeResult();
+            }
+        }
+
+        // 이전 문항
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        // 최종 스탯 계산 및 로컬 스토리지 저장
+        function finalizeResult() {
+            navigateTo('loading');
+
+            setTimeout(() => {
+                const scores = { TACTICIAN: 0, BREAKER: 0, ALLIANCE: 0, GUARDIAN: 0 };
+
+                answers.forEach((optIdx, qIdx) => {
+                    const chosenType = QUESTIONS[qIdx].options[optIdx].type;
+                    const weight = qIdx >= 8 ? 1.2 : 1.0;
+                    scores[chosenType] += weight;
+                });
+
+                let topClass = 'TACTICIAN';
+                let maxScore = -1;
+                for (const [cls, val] of Object.entries(scores)) {
+                    if (val > maxScore) {
+                        maxScore = val;
+                        topClass = cls;
+                    }
+                }
+
+                const rawCount = answers.filter((optIdx, qIdx) => QUESTIONS[qIdx].options[optIdx].type === topClass).length;
+                const syncRate = Math.min(98, Math.max(72, 68 + rawCount * 4));
+
+                const dynamicStats = CLASSES[topClass].stats.map((st, idx) => {
+                    const bonus = idx === 0 ? rawCount : Math.floor(rawCount / 2);
+                    return {
+                        ...st,
+                        value: Math.min(99, st.base - 4 + bonus)
+                    };
+                });
+
+                const now = new Date();
+                const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+                const payload = {
+                    topClass,
+                    syncRate,
+                    dynamicStats,
+                    savedAt: dateStr
+                };
+
+                savedResultData = payload;
+
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+                    const hudBtn = document.getElementById('hud-saved-btn');
+                    hudBtn.classList.remove('hidden');
+                    hudBtn.classList.add('inline-flex');
+                } catch (err) {
+                    console.warn('LocalStorage save failed:', err);
+                }
+
+                renderResultSheet(payload);
+                navigateTo('result');
+            }, 650);
+        }
+
+        // 캐릭터 시트 결과 렌더링
+        function renderResultSheet(payload) {
+            const info = CLASSES[payload.topClass];
+
+            document.getElementById('res-timestamp').textContent = `저장 일시 · ${payload.savedAt || '방금 전'}`;
+            document.getElementById('res-portrait').innerHTML = CHARACTER_ART[payload.topClass];
+            document.getElementById('res-badge').textContent = info.badge;
+            document.getElementById('res-en-name').textContent = info.enName;
+            document.getElementById('res-name').textContent = info.name;
+            document.getElementById('res-motto').textContent = info.motto;
+            document.getElementById('res-sync').textContent = `${payload.syncRate}%`;
+            document.getElementById('res-desc').textContent = info.desc;
+            document.getElementById('res-passive-title').textContent = info.passiveTitle;
+            document.getElementById('res-passive-desc').textContent = info.passiveDesc;
+            document.getElementById('res-party').textContent = info.party;
+            document.getElementById('res-mate-mbti').textContent = info.mateMbti;
+            document.getElementById('res-mate-major').textContent = info.mateMajor;
+            document.getElementById('res-mate-role').textContent = info.mateRole;
+
+            // 4대 능력치 게이지 렌더링
+            const statsEl = document.getElementById('res-stats');
+            statsEl.innerHTML = payload.dynamicStats.map(st => `
+                <div>
+                    <div class="flex justify-between items-center text-xs mb-1.5">
+                        <span class="text-slate-700 font-semibold">${st.label}</span>
+                        <span class="font-mono text-slate-900 font-bold">${st.value}</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-200/80 rounded-full overflow-hidden">
+                        <div class="h-full ${st.color} stat-bar-fill rounded-full" style="width: ${st.value}%"></div>
+                    </div>
+                </div>
+            `).join('');
+
+            // 추천 직무 TOP 3 슬롯 렌더링
+            const jobsEl = document.getElementById('res-jobs');
+            jobsEl.innerHTML = info.jobs.map(job => `
+                <div class="p-4 sm:p-5 rounded-2xl bg-slate-50/80 border border-slate-200/80 hover:border-blue-300 hover:bg-white transition-all flex items-start gap-3.5">
+                    <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 shrink-0 mt-0.5">
+                        ${job.rank}
+                    </span>
+                    <div>
+                        <h4 class="font-bold text-sm sm:text-base text-slate-900">${job.title}</h4>
+                        <p class="text-xs sm:text-[13px] text-slate-600 mt-1 leading-relaxed">${job.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 결과 복사 기능 (execCommand 사용)
+        function copyResultText() {
+            if (!savedResultData) return;
+            const info = CLASSES[savedResultData.topClass];
+            const jobsText = info.jobs.map((j, idx) => `${idx + 1}. ${j.title}`).join('\n');
+            const statsText = savedResultData.dynamicStats.map(s => `- ${s.label}: ${s.value}/100`).join('\n');
+
+            const textToCopy = [
+                `[CAREER STUDIO // 커리어 포지션 진단 결과]`,
+                ``,
+                `▶ 나의 커리어 캐릭터: ${info.name} (${info.enName})`,
+                `▶ 포지션 일치도: ${savedResultData.syncRate}%`,
+                `${info.motto}`,
+                ``,
+                `[일하는 방식과 강점]`,
+                `${info.desc}`,
+                ``,
+                `[핵심 역량 스탯]`,
+                statsText,
+                ``,
+                `[추천 직무 TOP 3]`,
+                jobsText,
+                ``,
+                `[함께 팀플하면 좋은 동료 추천]`,
+                `- 어울리는 동료 MBTI: ${info.mateMbti}`,
+                `- 추천 전공/학과: ${info.mateMajor}`,
+                `- 맡기면 좋은 업무와 역할: ${info.mateRole}`
+            ].join('\n');
+
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = textToCopy;
+            tempTextarea.style.position = 'fixed';
+            tempTextarea.style.opacity = '0';
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+
+            try {
+                document.execCommand('copy');
+                showToast('커리어 포지션 진단 결과가 클립보드에 복사되었습니다.');
+            } catch (err) {
+                showToast('복사에 실패했습니다. 브라우저 권한을 확인해 주세요.');
+            }
+
+            document.body.removeChild(tempTextarea);
+        }
+
+        // 토스트 알림 표시
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = message;
+            toast.classList.remove('opacity-0', 'translate-y-3');
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-3');
+            }, 2600);
+        }
+    </script>
+</body>
+</html>
